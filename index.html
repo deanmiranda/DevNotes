@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dev Notes</title>
+</head>
+<body>
+  <h1>My Notes</h1>
+  <form id="noteForm">
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required><br>
+    <label for="content">Content:</label>
+    <textarea id="content" name="content" rows="4" required></textarea><br>
+    <button type="submit">Save Note</button>
+  </form>
+
+  <h2>All Notes:</h2>
+  <ul id="notesList"></ul>
+
+  <script>
+    const noteForm = document.getElementById('noteForm');
+    const notesList = document.getElementById('notesList');
+
+    noteForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(noteForm);
+      const newNote = {
+        title: formData.get('title'),
+        content: formData.get('content')
+      };
+
+      fetch('/api/notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newNote)
+      })
+      .then(response => response.json())
+      .then(savedNote => {
+        displayNote(savedNote);
+      })
+      .catch(error => console.error('Error saving note:', error));
+
+      noteForm.reset();
+    });
+
+    fetch('/api/notes')
+      .then(response => response.json())
+      .then(data => {
+        console.log('data ', data);
+        data.forEach(note => {
+          displayNote(note);
+        });
+      })
+      .catch(error => console.error('Error fetching notes:', error));
+
+    function displayNote(note) {
+        const li = document.createElement('li');
+        li.textContent = `${note.title}: ${note.content}`;
+        notesList.appendChild(li);
+    }
+  </script>
+</body>
+</html>
