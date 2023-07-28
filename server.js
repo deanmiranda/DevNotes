@@ -4,7 +4,7 @@ const fs = require('fs');
 const bodyParser = require('body-parser'); // Import body-parser
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Parse incoming request bodies in a middleware before your handlers
 app.use(bodyParser.json());
